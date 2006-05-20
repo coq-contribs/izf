@@ -3,8 +3,7 @@ Title: Intuitionistic Zermelo-Fraenkel Set Theory in Coq
 Author: Alexandre Miquel
 Email: Alexandre.Miquel@pps.jussieu.fr
 Homepage: http://www.pps.jussieu.fr/~miquel
-Institution: INRIA
-Institution: Université Paris-Sud
+Institution: INRIA - Université Paris-Sud
 Date: February 2003
 Description: This development contains the set-as-pointed-graph
   interpretation of Intuitionistic Zermelo Frankel set theory in system
