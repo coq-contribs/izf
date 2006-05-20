@@ -1,8 +1,8 @@
-Intuitionistic Zermelo-Frankel set theory in Coq
+Intuitionistic Zermelo-Fraenkel set theory in Coq
 ================================================
 
 These Coq-files contain the set-as-pointed graph interpretation of
-Intuitionistic Zermelo Frankel set theory in type theory, which is
+Intuitionistic Zermelo Fraenkel set theory in type theory, which is
 described in chapter 9 of the author's PhD thesis (for IZ) and in
 the author's CSL'03 paper (for the extension IZ -> IZF).
 
@@ -26,10 +26,10 @@ Contents
 
   IZF_coll.v:  Translation of the intuitionistic collection scheme.
     The corresponding proofs rely on some extra-axioms that define
-    the intuitionisitic version of Hilbert's choice operator, such
+    the Intuitionistic version of Hilbert's choice operator, such
     as described in the author's LICS'03 submitted paper.
 
-  IZF_nat.v:  An implementation of Chuch numerals in the second
+  IZF_nat.v:  An implementation of Church numerals in the second
     predicative universe.  Translation of Peano axioms.
 
   IZF_omega.v:  Translation of the set-theoretic axiom of infinity.
