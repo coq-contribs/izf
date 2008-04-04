@@ -1,4 +1,4 @@
--R . IZF-in-coq
+-R . IZF
 IZF_base.v
 IZF_coll.v
 IZF_logic.v
