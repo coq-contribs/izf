@@ -11,7 +11,6 @@ Description: This development contains the set-as-pointed-graph
   operator), which is described in chapter 9 of the author's PhD
   thesis (for IZ) and in the author's CSL'03 paper (for the extension
   IZ -> IZF).
-URL:
 Keywords: Intuitionistic set theory, pointed graphs, type theory,
   intuitionistic choice operator, set theory, Zermelo-Fraenkel
 Require:
