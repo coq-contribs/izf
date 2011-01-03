@@ -17,32 +17,32 @@
 Require Import IZF_logic.
 Require Import IZF_base.
 
-(* Let (X, A, a) and (Y, B, b) be two pointed graphs (with X,Y : Typ1).
-   The unordered pair formed by the sets represented by these pointed
-   graphs is itself represented by the pointed graph
+(** Let (X, A, a) and (Y, B, b) be two pointed graphs (with X,Y : Typ1).
+    The unordered pair formed by the sets represented by these pointed
+    graphs is itself represented by the pointed graph
 
-     ((sum X Y), (PAIR X A a Y B b), (out X Y))
+      ((sum X Y), (PAIR X A a Y B b), (out X Y))
 
-   whose edge relation (PAIR X A a Y B b) : (Rel (sum X Y)) is
-   defined by the following four clauses :
+    whose edge relation (PAIR X A a Y B b) : (Rel (sum X Y)) is
+    defined by the following four clauses :
 
-   1. Delocate A in the new graph via (inl X Y):
+    1. Delocate A in the new graph via (inl X Y):
 
-        if (A x' x), then (PAIR X A a Y B b (inl X Y x') (inl X Y x))
+         if (A x' x), then (PAIR X A a Y B b (inl X Y x') (inl X Y x))
 
-   2. Delocate B in the new graph via (inr X Y):
+    2. Delocate B in the new graph via (inr X Y):
 
-        if (B y' y), then (PAIR X A a Y B b (inr X Y y') (inr X Y y))
+         if (B y' y), then (PAIR X A a Y B b (inr X Y y') (inr X Y y))
 
-   3. Connect the (image of the) root a to the new root (out X Y):
+    3. Connect the (image of the) root a to the new root (out X Y):
 
-        (PAIR X A a Y B b (inl X Y a) (out X Y))
+         (PAIR X A a Y B b (inl X Y a) (out X Y))
 
-   4. Connect the (image of the) root b to the new root (out X Y):
+    4. Connect the (image of the) root b to the new root (out X Y):
 
-        (PAIR X A a Y B b (inr X Y b) (out X Y))
+         (PAIR X A a Y B b (inr X Y b) (out X Y))
 
-  As usual, we define this relation by a direct impredicative encoding: *)
+   As usual, we define this relation by a direct impredicative encoding: *)
 
 Definition PAIR (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) 
   (B : Rel Y) (b : Y) (z' z : sum X Y) :=
@@ -54,8 +54,8 @@ Definition PAIR (X : Typ1) (A : Rel X) (a : X) (Y : Typ1)
   (eq (sum X Y) z' (inl X Y a) -> eq (sum X Y) z (out X Y) -> E) ->
   (eq (sum X Y) z' (inr X Y b) -> eq (sum X Y) z (out X Y) -> E) -> E.
 
-(* The introduction rules corresponding to the 4 clauses of the
-   definition of (PAIR X A a Y B b) are the following: *)
+(** The introduction rules corresponding to the 4 clauses of the
+    definition of (PAIR X A a Y B b) are the following: *)
 
 Lemma PAIR_in1 :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) 
@@ -88,9 +88,9 @@ Proof
   fun X A a Y B b E H1 H2 H3 H4 =>
   H4 (eq_refl (sum X Y) (inr X Y b)) (eq_refl (sum X Y) (out X Y)).
 
-(* We first check that the left injection (inl X Y) : X -> (sum X Y)
-   is a delocation, and deduce that the pointed graphs (X, A, a) and
-   ((sum X Y), (PAIR X A a Y B b), (inl X Y a)) are bisimilar. *)
+(** We first check that the left injection (inl X Y) : X -> (sum X Y)
+    is a delocation, and deduce that the pointed graphs (X, A, a) and
+    ((sum X Y), (PAIR X A a Y B b), (inl X Y a)) are bisimilar. *)
 
 Lemma PAIR_deloc1 :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -123,7 +123,7 @@ Proof.
 intros; apply EQV_deloc; apply PAIR_deloc1.
 Qed.
 
-(* The same for the right injection (inr X Y) : Y -> (sum X Y). *)
+(** The same for the right injection (inr X Y) : Y -> (sum X Y). *)
 
 Lemma PAIR_deloc2 :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -155,8 +155,8 @@ Proof.
 intros; apply EQV_deloc; apply PAIR_deloc2.
 Qed.
 
-(* From PAIR_eqv1 and PAIR_eqv2, we easily get that the pointed graphs
-   (X, A, a) and (Y, B, b) are elements of the unordered pair. *)
+(** From PAIR_eqv1 and PAIR_eqv2, we easily get that the pointed graphs
+    (X, A, a) and (Y, B, b) are elements of the unordered pair. *)
 
 Lemma pairing_intro1 :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -177,8 +177,8 @@ intros X A a Y B b; apply ELT_intro with (inr X Y b).
 apply PAIR_rt2.  apply PAIR_eqv2.
 Qed.
 
-(* And conversely, (X, A, a) and (Y, B, b) are the only elements of
-   the pair, up to bisimulation. *)
+(** And conversely, (X, A, a) and (Y, B, b) are the only elements of
+    the pair, up to bisimulation. *)
 
 Lemma pairing_elim :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) 
@@ -204,7 +204,7 @@ apply EQV_trans with (sum X Y) (PAIR X A a Y B b) (inr X Y b).
 apply H2; assumption. apply EQV_sym; apply PAIR_eqv2.
 Qed.
 
-(* By collecting the last three lemmas, we obtain the desired result: *)
+(** By collecting the last three lemmas, we obtain the desired result: *)
 
 Theorem pairing :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) 

@@ -16,81 +16,81 @@
 
 Require Import IZF_logic.
 
-(* To define the type of natural numbers, we introduce an extra
-   universe Typ0 *below* the universe Typ1 (so that we are now
-   working in the PTS lambda-omega.3).
+(** To define the type of natural numbers, we introduce an extra
+    universe Typ0 *below* the universe Typ1 (so that we are now
+    working in the PTS lambda-omega.3).
 
-   Another possibility would be to consider an axiomatized type
-   of natural numbers (as in the author's LICS submission). *)
+    Another possibility would be to consider an axiomatized type
+    of natural numbers (as in the author's LICS submission). *)
 
 Definition Typ0 : Typ1 := Type.
 
 (*******************************************)
-(*   The type of Church numerals in Typ1   *)
+(** * The type of Church numerals in Typ1  *)
 (*******************************************)
 
-(*** Definition of natural numbers ***)
+(** ** Definition of natural numbers **)
 
-(* Notice that the following definition is *predicative*, and the
-   dependent product ranging over all X:Typ0 builds a type in the
-   next universe Typ1.  In practice, this "predicativisation" of
-   the type of natural numbers induces some minor changes in the
-   implementation of the predecessor function. *)
+(** Notice that the following definition is *predicative*, and the
+    dependent product ranging over all X:Typ0 builds a type in the
+    next universe Typ1.  In practice, this "predicativisation" of
+    the type of natural numbers induces some minor changes in the
+    implementation of the predecessor function. *)
 
 Definition nat : Typ1 := forall X : Typ0, X -> (X -> X) -> X.
 Definition O : nat := fun X x f => x.
 Definition S (n : nat) : nat := fun X x f => f (n X x f).
 
-(* A natural number is `well-formed' if it is in the smallest class
-   containing zero and closed under the successor function. *)
+(** A natural number is `well-formed' if it is in the smallest class
+    containing zero and closed under the successor function. *)
 
 Definition wf_nat (n : nat) : Prop :=
   forall P : nat -> Prop, P O -> (forall p : nat, P p -> P (S p)) -> P n.
 
-(*** The predecessor function ***)
+(** ** The predecessor function **)
 
-(* For any type X : Typ0, we define the pseudo-square (sqr X) : Typ0
-   and the constructor (pair X) : X->X->(sqr X) by setting: *)
+(** For any type X : Typ0, we define the pseudo-square (sqr X) : Typ0
+    and the constructor (pair X) : X->X->(sqr X) by setting: *)
 
 Definition sqr (X : Typ0) : Typ0 := (X -> X -> X) -> X.
 Definition pair (X : Typ0) (x y : X) : sqr X := fun f => f x y.
 
-(* The corresponding projections *)
+(** The corresponding projections *)
 
 Definition fst (X : Typ0) (p : sqr X) : X := p (fun x _ => x).
 Definition snd (X : Typ0) (p : sqr X) : X := p (fun _ y => y).
 
-(* enjoy the expected definitional equalities:
+(** enjoy the expected definitional equalities:
 
-   (fst X (pair X x y)) = x   and   (snd X (pair X x y)) = y. *)
+    (fst X (pair X x y)) = x   and   (snd X (pair X x y)) = y. *)
 
-(* Now, consider an arbitrary function f : X->X.  From this function, we
-   define a function  (step X f) : (sqr X)->(sqr X)  that maps the pair
-   (x, y) to the pair (y, (f y)) by setting: *)
+(** Now, consider an arbitrary function f : X->X.  From this function, we
+    define a function  (step X f) : (sqr X)->(sqr X)  that maps the pair
+    (x, y) to the pair (y, (f y)) by setting: *)
 
 Definition step (X : Typ0) (f : X -> X) (p : sqr X) : 
   sqr X := pair X (snd X p) (f (snd X p)).
 
-(* If we iterate the function (step X f) from an arbitrary pair of the
-   form (x, x), we obtain
+(** If we iterate the function (step X f) from an arbitrary pair of the
+    form (x, x), we obtain
 
-   (step X f)^0 (x, x) = (x, x)
-   (step X f)^1 (x, x) = (x, (f x))
-   (step X f)^2 (x, x) = ((f x), (f (f x))
-   ...
-   (step X f)^n (x, x) = ((f ... (f x) ...), (f ... (f x) ...))
-                           ^^^^^^^^           ^^^^^^^^
-                           n-1 times          n times
+    (step X f)^0 (x, x) = (x, x)
+    (step X f)^1 (x, x) = (x, (f x))
+    (step X f)^2 (x, x) = ((f x), (f (f x))
+    ...
+    (step X f)^n (x, x) = ((f ... (f x) ...), (f ... (f x) ...))
+                            ^^^^^^^^           ^^^^^^^^
+                            n-1 times          n times
 
-   By extracting the first component of the result and abstracting it
-   w.r.t. the variables X:Typ0, x:X and f:X->X, we thus obtain the
-   predecessor of Church numeral n.  This is how the predecessor
-   function is implemented: *)
+    By extracting the first component of the result and abstracting it
+    w.r.t. the variables X:Typ0, x:X and f:X->X, we thus obtain the
+    predecessor of Church numeral n.  This is how the predecessor
+    function is implemented: *)
 
 Definition pred (n : nat) : nat :=
   fun X x f => fst X (n (sqr X) (pair X x x) (step X f)).
 
-(* We easily check the following definitional equalities: *)
+(** We easily check the following definitional equalities: *)
 
 Lemma pred_O : eq nat (pred O) O.
 Proof eq_refl nat O.
@@ -98,14 +98,14 @@ Proof eq_refl nat O.
 Lemma pred_SO : eq nat (pred (S O)) O.
 Proof eq_refl nat O.
 
-(* The following equality is really definitional!
-   "I can see it, but I don't believe it"... *)
+(** The following equality is really definitional!
+    "I can see it, but I don't believe it"... *)
 
 Lemma pred_SSn : forall n : nat, eq nat (pred (S (S n))) (S (pred (S n))).
 Proof fun n => eq_refl nat (pred (S (S n))).
 
-(* From this, we prove that the predecessor cancels a previous
-   application of the successor function (by induction) *)
+(** From this, we prove that the predecessor cancels a previous
+    application of the successor function (by induction) *)
 
 Lemma pred_S : forall n : nat, wf_nat n -> eq nat (pred (S n)) n.
 
@@ -119,22 +119,22 @@ apply H; apply pred_SSn.
 Qed.
 
 (*******************************)
-(*   Deriving Peano's axioms   *)
+(** * Deriving Peano's axioms  *)
 (*******************************)
 
-(*** First axiom of Peano ***)
+(** ** First axiom of Peano **)
 
 Lemma wf_nat_O : wf_nat O.
 
 Proof fun P HO HS => HO.
 
-(*** Second axiom of Peano ***)
+(** ** Second axiom of Peano **)
 
 Lemma wf_nat_S : forall n : nat, wf_nat n -> wf_nat (S n).
 
 Proof fun n H P HO HS => HS n (H P HO HS).
 
-(*** Third axiom of Peano ***)
+(** ** Third axiom of Peano **)
 
 Lemma eq_S_O : forall n : nat, wf_nat n -> eq nat (S n) O -> bot.
 
@@ -144,10 +144,10 @@ Lemma eq_O_S : forall n : nat, wf_nat n -> eq nat O (S n) -> bot.
 
 Proof fun n _ H => H (fun p => p Prop top (fun _ => bot)) top_intro.
 
-(* Note that in the proofs of the two lemmas above, the assumption
-   (wf_nat n) is not used. *)
+(** Note that in the proofs of the two lemmas above, the assumption
+    (wf_nat n) is not used. *)
 
-(*** Fourth axiom of Peano ***)
+(** ** Fourth axiom of Peano **)
 
 Lemma eq_S_S :
  forall n : nat,
@@ -160,7 +160,7 @@ apply (pred_S p Hp).
 apply H; apply eq_refl.
 Qed.
 
-(*** Fifth axiom of Peano ***)
+(** ** Fifth axiom of Peano **)
 
 Lemma nat_ind :
  forall P : nat -> Prop,
@@ -190,15 +190,15 @@ Lemma nat_ind' :
 Proof fun n Hn P HO HS => nat_ind P HO HS n Hn.
 
 (****************)
-(*   Ordering   *)
+(** * Ordering  *)
 (****************)
 
 Definition le (n m : nat) : Prop :=
   forall P : nat -> Prop, P n -> (forall p : nat, P p -> P (S p)) -> P m.
 
-(* This relation is reflexive and transitive, and closed under the
-   successor function.  Notice that these lemmas do not rely on the
-   well-formedness assumption: *)
+(** This relation is reflexive and transitive, and closed under the
+    successor function.  Notice that these lemmas do not rely on the
+    well-formedness assumption: *)
 
 Lemma le_refl : forall n : nat, le n n.
 
@@ -212,8 +212,8 @@ Lemma le_S : forall n m : nat, le n m -> le n (S m).
 
 Proof fun n m H P Hn HS => HS m (H P Hn HS).
 
-(* The successor of a natural number cannot be less than or equal
-   to zero: *)
+(** The successor of a natural number cannot be less than or equal
+    to zero: *)
 
 Lemma le_Sn_O : forall n : nat, le (S n) O -> bot.
 
@@ -221,7 +221,7 @@ Proof
   fun n H =>
   H (fun k => k Prop bot (fun _ => top)) top_intro (fun _ _ => top_intro).
 
-(* Inversion lemma for (le n m): *)
+(** Inversion lemma for (le n m): *)
 
 Lemma le_inv :
  forall n m : nat,
@@ -255,7 +255,7 @@ apply (eq_sym _ _ _ (eq_S_S m Hm k Hk H2)).
 apply or_inl; assumption.
 Qed.
 
-(*** Strict ordering ***)
+(** ** Strict ordering **)
 
 Definition lt (n m : nat) : Prop := le (S n) m.
 
