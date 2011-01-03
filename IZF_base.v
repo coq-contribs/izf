@@ -16,49 +16,49 @@
 
 Require Import IZF_logic.
 
-(* Sets as pointed graphs
-   ~~~~~~~~~~~~~~~~~~~~~~
-   In the following, we will interpret sets as pointed graphs, that
-   is, as triples of the form (X, A, a) where :
+(** Sets as pointed graphs
+    ~~~~~~~~~~~~~~~~~~~~~~
+    In the following, we will interpret sets as pointed graphs, that
+    is, as triples of the form (X, A, a) where :
 
-   - X : Typ1     is the carrier (i.e. the small type of vertices);
-   - A : (Rel X)  is the edge (or local membership) relation;
-   - a : X        is the root.
+    - X : Typ1     is the carrier (i.e. the small type of vertices);
+    - A : (Rel X)  is the edge (or local membership) relation;
+    - a : X        is the root.
 
-   Naming conventions
-   ~~~~~~~~~~~~~~~~~~
-   Since the PTS Fw.2 does not provide any pairing mechanism, we will
-   introduce the three components of each pointed graph separately.
-   Of course, this separation is error-prone, and to avoid confusions
-   we will name components according to the following scheme:
+    Naming conventions
+    ~~~~~~~~~~~~~~~~~~
+    Since the PTS Fw.2 does not provide any pairing mechanism, we will
+    introduce the three components of each pointed graph separately.
+    Of course, this separation is error-prone, and to avoid confusions
+    we will name components according to the following scheme:
 
-   Pointed graph   Vertices
-   -------------   --------
-   (X, A, a)       x, x', x0, x1, etc.
-   (Y, B, b)       y, y', y0, y1, etc.
-   (Z, C, c)       z, z', z0, z1, etc.
-   etc.
+    Pointed graph   Vertices
+    -------------   --------
+    (X, A, a)       x, x', x0, x1, etc.
+    (Y, B, b)       y, y', y0, y1, etc.
+    (Z, C, c)       z, z', z0, z1, etc.
+    etc.
 
-   Moreover, a letter affected with a prime (such as x') will usually
-   indicate that the vertex (or carrier, or relation) it denotes is in
-   some sense an element of the corresponding unaffected letter. *)
+    Moreover, a letter affected with a prime (such as x') will usually
+    indicate that the vertex (or carrier, or relation) it denotes is in
+    some sense an element of the corresponding unaffected letter. *)
 
 (********************************)
-(*   Equality as bisimilarity   *)
+(** * Equality as bisimilarity  *)
 (********************************)
 
-(* Two pointed graphs (X, A, a) and (Y, B, b) are bisimilar if there
-   exists a relation R:X->Y->Prop satisfying the following conditions:
+(** Two pointed graphs (X, A, a) and (Y, B, b) are bisimilar if there
+    exists a relation R:X->Y->Prop satisfying the following conditions:
 
-   (BIS1) (x,x':X; y:Y) (A x' x)/\(R x y) -> (Ex y':Y | (B y' y)/\(R x' y'))
+    (BIS1) (x,x':X; y:Y) (A x' x)/\(R x y) -> (Ex y':Y | (B y' y)/\(R x' y'))
 
-   (BIS2) (x,x':X; y:Y) (A x' x)/\(R x y) -> (Ex y':Y | (B y' y)/\(R x' y'))
+    (BIS2) (x,x':X; y:Y) (A x' x)/\(R x y) -> (Ex y':Y | (B y' y)/\(R x' y'))
 
-   (BIS3) (R a b)
+    (BIS3) (R a b)
 
-   Instead of defining this relation by the mean of standard logical
-   connectives, we give an equivalent impredicative encoding for it
-   in order to make the forthcoming proofs a little bit shorter. *)
+    Instead of defining this relation by the mean of standard logical
+    connectives, we give an equivalent impredicative encoding for it
+    in order to make the forthcoming proofs a little bit shorter. *)
 
 Definition EQV (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) 
   (B : Rel Y) (b : Y) : Prop :=
@@ -70,7 +70,7 @@ Definition EQV (X : Typ1) (A : Rel X) (a : X) (Y : Typ1)
     B y' y -> R x y -> ex2 X (fun x' => A x' x) (fun x' => R x' y')) ->
    R a b -> E) -> E.
 
-(* Here is the corresponding introduction rule: *)
+(** Here is the corresponding introduction rule: *)
 
 Lemma EQV_intro :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) 
@@ -83,11 +83,11 @@ Lemma EQV_intro :
 
 Proof fun X A a Y B b R H1 H2 H3 E e => e R H1 H2 H3.
 
-(* It would be useless to define the corresponding elimination rule
-   whose behaviour is obtained by using [Apply H] instead of [Elim H]
-   in the following proof scripts.
+(** It would be useless to define the corresponding elimination rule
+    whose behaviour is obtained by using [Apply H] instead of [Elim H]
+    in the following proof scripts.
 
-   We first check that bisimilarity is an equivalence relation: *)
+    We first check that bisimilarity is an equivalence relation: *)
 
 Lemma EQV_refl : forall (X : Typ1) (A : Rel X) (a : X), EQV X A a X A a.
 
@@ -138,9 +138,9 @@ apply ex2_intro with y'; assumption.
 apply ex2_intro with b; assumption.
 Qed.
 
-(* The following lemma states that the bisimilarity relation can be
-   shifted one vertex down by following the edges of both local
-   membership relations. *)
+(** The following lemma states that the bisimilarity relation can be
+    shifted one vertex down by following the edges of both local
+    membership relations. *)
 
 Lemma EQV_shift :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -156,14 +156,14 @@ apply EQV_intro with R; assumption.
 Qed.
 
 (******************************************)
-(*   Membership as shifted bisimilarity   *)
+(** * Membership as shifted bisimilarity  *)
 (******************************************)
 
-(* A pointed graph (X, A, a) represents an element of a pointed graph
-   (Y, B, b) if there is a vertex b':Y one edge below the root b such
-   that the pointed graphs (X, A, a) and (Y, B, b') are bisimilar.
+(** A pointed graph (X, A, a) represents an element of a pointed graph
+    (Y, B, b) if there is a vertex b':Y one edge below the root b such
+    that the pointed graphs (X, A, a) and (Y, B, b') are bisimilar.
 
-   This relation is impredicatively encoded as follows: *)
+    This relation is impredicatively encoded as follows: *)
 
 Definition ELT (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) 
   (B : Rel Y) (b : Y) : Prop :=
@@ -175,9 +175,9 @@ Lemma ELT_intro :
 
 Proof fun X A a Y B b b' H1 H2 E e => e b' H1 H2.
 
-(* Direct elements of a pointed graph (X, A, a) are simply the pointed
-   graphs of the form (X, A, a') such that (A a' a), that is, the
-   pointed graphs we obtain by shifting the root one edge downwards: *)
+(** Direct elements of a pointed graph (X, A, a) are simply the pointed
+    graphs of the form (X, A, a') such that (A a' a), that is, the
+    pointed graphs we obtain by shifting the root one edge downwards: *)
 
 Lemma ELT_direct :
  forall (X : Typ1) (A : Rel X) (a a' : X), A a' a -> ELT X A a' X A a.
@@ -187,10 +187,10 @@ intros X A a a' H; apply ELT_intro with a'.
 assumption.  apply EQV_refl.
 Qed.
 
-(* We now state the (left and right) compatibility of the membership
-   relation w.r.t. the bisimilarity relation.  Both compatibilities
-   rely on the transitivity of the bisimilarity relation, and the
-   right compatibility uses the EQV_shift lemma we proved above. *)
+(** We now state the (left and right) compatibility of the membership
+    relation w.r.t. the bisimilarity relation.  Both compatibilities
+    rely on the transitivity of the bisimilarity relation, and the
+    right compatibility uses the EQV_shift lemma we proved above. *)
 
 Lemma ELT_compat_l :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) 
@@ -218,16 +218,16 @@ apply EQV_trans with Y B b'; assumption.
 Qed.
 
 (************************************)
-(*   Inclusion and extensionality   *)
+(** * Inclusion and extensionality  *)
 (************************************)
 
-(* The inclusion relation is defined as expected: *)
+(** The inclusion relation is defined as expected: *)
 
 Definition SUB (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) 
   (B : Rel Y) (b : Y) : Prop :=
   forall (Z : Typ1) (C : Rel Z) (c : Z), ELT Z C c X A a -> ELT Z C c Y B b.
 
-(* Inclusion is clearly reflexive and transitive: *)
+(** Inclusion is clearly reflexive and transitive: *)
 
 Lemma SUB_refl : forall (X : Typ1) (A : Rel X) (a : X), SUB X A a X A a.
 
@@ -244,10 +244,10 @@ Proof.
 unfold SUB in |- *; auto.
 Qed.
 
-(* We now state the extensionality property, which expresses that the
-   inclusion relation is antisymmetric (thus being a partial ordering
-   relation between sets).  Equivalently, this property says that two
-   pointed graphs are bisimilar when they have the same elements. *)
+(** We now state the extensionality property, which expresses that the
+    inclusion relation is antisymmetric (thus being a partial ordering
+    relation between sets).  Equivalently, this property says that two
+    pointed graphs are bisimilar when they have the same elements. *)
 
 Theorem extensionality :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -289,20 +289,20 @@ apply or_inl; apply and_intro; apply eq_refl.
 Qed.
 
 (*******************)
-(*   Delocations   *)
+(** * Delocations  *)
 (*******************)
 
-(* Let (X, A) and (Y, B) be two graphs.  A delocation from (X, A) to
-   (Y, B) is a function f : X->Y such that:
+(** Let (X, A) and (Y, B) be two graphs.  A delocation from (X, A) to
+    (Y, B) is a function f : X->Y such that:
 
-   1. (x,x':X)    (A x' x) -> (B (f x') (f x))
+    1. (x,x':X)    (A x' x) -> (B (f x') (f x))
 
-   2. (x:X; y':Y) (B y' (f x)) -> (Ex x':X | (A x' x) /\ y'=(f x'))
+    2. (x:X; y':Y) (B y' (f x)) -> (Ex x':X | (A x' x) /\ y'=(f x'))
 
-   Intuitively, a delocation is a morphism of graphs in which any edge
-   of the target graph (Y, B) which points to an element of the image
-   of f can be tracked back as an edge in the source graph via f.
-   This notion is formalized as follows: *)
+    Intuitively, a delocation is a morphism of graphs in which any edge
+    of the target graph (Y, B) which points to an element of the image
+    of f can be tracked back as an edge in the source graph via f.
+    This notion is formalized as follows: *)
 
 Definition deloc (X : Typ1) (A : Rel X) (Y : Typ1) 
   (B : Rel Y) (f : X -> Y) : Prop :=
@@ -310,10 +310,10 @@ Definition deloc (X : Typ1) (A : Rel X) (Y : Typ1)
     (forall (x : X) (y' : Y),
      B y' (f x) -> ex2 X (fun x' => A x' x) (fun x' => eq Y y' (f x'))).
 
-(* The notion of delocation f:(X,A)->(Y,B) is interesting since it
-   automatically induces a bisimulation from the pointed graph (X, A, x)
-   to the pointed graph (Y, B, (f x)) for any vertex x:X in the source
-   graph (X,A).  This property is stated by the following lemma: *)
+(** The notion of delocation f:(X,A)->(Y,B) is interesting since it
+    automatically induces a bisimulation from the pointed graph (X, A, x)
+    to the pointed graph (Y, B, (f x)) for any vertex x:X in the source
+    graph (X,A).  This property is stated by the following lemma: *)
 
 Lemma EQV_deloc :
  forall (X : Typ1) (A : Rel X) (Y : Typ1) (B : Rel Y) (f : X -> Y),

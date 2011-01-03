@@ -19,12 +19,12 @@ Require Import IZF_base.
 Require Import IZF_nat.
 
 (*************)
-(*   Zero    *)
+(** * Zero   *)
 (*************)
 
-(* In set theory, zero is implemented as the empty set.  As a
-   pointed graph, we can take any (non-empty) carrier and any
-   root, with an empty edge relation: *)
+(** In set theory, zero is implemented as the empty set.  As a
+    pointed graph, we can take any (non-empty) carrier and any
+    root, with an empty edge relation: *)
 
 Definition unit : Typ1 := forall X : Typ0, X -> X.
 Definition id : unit := fun X x => x.
@@ -39,36 +39,36 @@ intros b' H1 H2; exact H1.
 Qed.
 
 (*******************************)
-(*   The successor function    *)
+(** * The successor function   *)
 (*******************************)
 
-(* In set theory, the successor of von Neumann numeral n is encoded
-   as the set  n U {n}, whose existence follows from the pairing
-   axiom (used twice) and the union axiom, that have been already
-   derived in the files "IZF_pair.v"  and "IZF_union.v".
+(** In set theory, the successor of von Neumann numeral n is encoded
+    as the set  n U {n}, whose existence follows from the pairing
+    axiom (used twice) and the union axiom, that have been already
+    derived in the files "IZF_pair.v"  and "IZF_union.v".
 
-   However, it is simpler to give here a direct implementation of the
-   successor as follows.  Formally, the successor of a given pointed
-   graph (X, A, a) is represented as the pointed graph
+    However, it is simpler to give here a direct implementation of the
+    successor as follows.  Formally, the successor of a given pointed
+    graph (X, A, a) is represented as the pointed graph
 
-       ((opt X), (SUCC X A a), (none X))
+        ((opt X), (SUCC X A a), (none X))
 
-   whose edge relation is defined by the following three clauses:
+    whose edge relation is defined by the following three clauses:
 
-   1. Delocate A in the new graph via (some X):
+    1. Delocate A in the new graph via (some X):
 
-        if (A x' x), then (SUCC X A a (some X x') (some X x))
+         if (A x' x), then (SUCC X A a (some X x') (some X x))
 
-   2. Connect the image of any direct element of the old root a:X
-      to the new root:
+    2. Connect the image of any direct element of the old root a:X
+       to the new root:
 
-        if (A x a), then (SUCC X A a (some X x) (none X))
+         if (A x a), then (SUCC X A a (some X x) (none X))
 
-   3. Connect the old root to the new root:
+    3. Connect the old root to the new root:
 
-        (SUCC X A a (some X a) (none X)).
+         (SUCC X A a (some X a) (none X)).
 
-   As usual, we use a second-order encoding to define this relation. *)
+    As usual, we use a second-order encoding to define this relation. *)
 
 Definition SUCC (X : Typ1) (A : Rel X) (a : X) : Rel (opt X) :=
   fun z' z =>
@@ -208,24 +208,24 @@ apply SUCC_intro2.
 Qed.
 
 (**************************************)
-(*   The set of von Neuman numerals   *)
+(** * The set of von Neuman numerals  *)
 (**************************************)
 
-(* The set omega of von Neumann numerals is represented as the
-   pointed graph ((opt nat), OMEGA, (none nat)) whose edge
-   relation OMEGA : (Rel (opt nat)) is defined by the following
-   two clauses:
+(** The set omega of von Neumann numerals is represented as the
+    pointed graph ((opt nat), OMEGA, (none nat)) whose edge
+    relation OMEGA : (Rel (opt nat)) is defined by the following
+    two clauses:
 
-   1. Delocation of the strict ordering "lt"
+    1. Delocation of the strict ordering "lt"
 
-        if (wf_nat n), (wf_nat m) and (lt n m),
-        then (OMEGA (some nat n) (some nat m))
+         if (wf_nat n), (wf_nat m) and (lt n m),
+         then (OMEGA (some nat n) (some nat m))
 
-   2. Connecting wf_nat's to the new root:
+    2. Connecting wf_nat's to the new root:
 
-        if (wf_nat n), then (OMEGA (some nat n) (none nat)).
+         if (wf_nat n), then (OMEGA (some nat n) (none nat)).
 
-   As usual, we define it via a second-order encoding: *)
+    As usual, we define it via a second-order encoding: *)
 
 Definition OMEGA : Rel (opt nat) :=
   fun z' z =>
@@ -237,7 +237,7 @@ Definition OMEGA : Rel (opt nat) :=
    eq (opt nat) z (none nat) ->
    eq (opt nat) z' (some nat n') -> wf_nat n' -> E) -> E.
 
-(* The corresponding constructors are the following: *)
+(** The corresponding constructors are the following: *)
 
 Lemma OMEGA_in :
  forall n : nat,
@@ -255,9 +255,9 @@ Proof
   fun n Hn E _ H2 =>
   H2 n (eq_refl (opt nat) (none nat)) (eq_refl (opt nat) (some nat n)) Hn.
 
-(* The pointed graph ((opt nat), OMEGA, (some nat O)) is bisimilar
-   to the pointed graph (unit ZERO id) that represents the empty set.
-   This is done by extensionality. *)
+(** The pointed graph ((opt nat), OMEGA, (some nat O)) is bisimilar
+    to the pointed graph (unit ZERO id) that represents the empty set.
+    This is done by extensionality. *)
 
 Lemma OMEGA_ZERO : EQV (opt nat) OMEGA (some nat O) unit ZERO id.
 
@@ -275,10 +275,10 @@ intros n H2 H3 Hn; apply (eq_some_none _ _ H2).
 apply H; clear H; intros u H H1; apply H.
 Qed.
 
-(* Inductive case: for any n:nat such that (wf_nat n), the pointed
-   graph ((opt nat), OMEGA, (some nat (S n))) is bisimilar to the
-   successor of the pointed graph ((opt nat), OMEGA, (some nat n)).
-   Again, this is done by extensionality. *)
+(** Inductive case: for any n:nat such that (wf_nat n), the pointed
+    graph ((opt nat), OMEGA, (some nat (S n))) is bisimilar to the
+    successor of the pointed graph ((opt nat), OMEGA, (some nat n)).
+    Again, this is done by extensionality. *)
 
 Lemma OMEGA_SUCC :
  forall n : nat,
@@ -323,10 +323,10 @@ exact (OMEGA_in n Hn (S n) (wf_nat_S n Hn) (lt_n_Sn n)).
 assumption.
 Qed.
 
-(*** The axiom of infinity ****)
+(** ** The axiom of infinity **)
 
-(* The set denoted by the pointed graph ((opt nat), OMEGA, (none nat))
-   contains zero (i.e. the empty set)... *)
+(** The set denoted by the pointed graph ((opt nat), OMEGA, (none nat))
+    contains zero (i.e. the empty set)... *)
 
 Theorem omega_zero : ELT unit ZERO id (opt nat) OMEGA (none nat).
 
@@ -336,7 +336,7 @@ exact (OMEGA_rt O wf_nat_O).
 apply EQV_sym; exact OMEGA_ZERO.
 Qed.
 
-(* ... and is closed under successor: *)
+(** ... and is closed under successor: *)
 
 Theorem omega_succ :
  forall (X : Typ1) (A : Rel X) (a : X),
@@ -357,7 +357,7 @@ apply SUCC_compat; apply H; assumption.
 apply EQV_sym; apply OMEGA_SUCC; assumption.
 Qed.
 
-(* And we now check the induction principle on omega: *)
+(** And we now check the induction principle on omega: *)
 
 Require Import IZF_select.  (* For PRED and Compat *)
 

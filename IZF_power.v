@@ -17,30 +17,30 @@
 Require Import IZF_logic.
 Require Import IZF_base.
 
-(* Let (X, A, a) be a pointed graph.  The powerset of the set represented
-   by this pointed graph is itself represented by the pointed graph
+(** Let (X, A, a) be a pointed graph.  The powerset of the set represented
+    by this pointed graph is itself represented by the pointed graph
 
-     ((sum X X->Prop), (POWER X A a), (out X X->Prop))
+      ((sum X X->Prop), (POWER X A a), (out X X->Prop))
 
-   whose edge relation (POWER X A a) : (Rel (sum X X->Prop)) is defined
-   by the following 3 clauses:
+    whose edge relation (POWER X A a) : (Rel (sum X X->Prop)) is defined
+    by the following 3 clauses:
 
-   1. Delocating A into the powerset:
+    1. Delocating A into the powerset:
 
-        if (A x' x),
-        then (POWER X A a (inl X X->Prop x') (inl X X->Prop x))
+         if (A x' x),
+         then (POWER X A a (inl X X->Prop x') (inl X X->Prop x))
 
-   2. Connecting each vertex x':X such that (A x' a) to all the
-      predicates p : X->Prop such that (p x'):
+    2. Connecting each vertex x':X such that (A x' a) to all the
+       predicates p : X->Prop such that (p x'):
 
-        if (A x' a) and (p x'),
-        then (POWER X A a (inl X X->Prop x') (inr X X->Prop p))
+         if (A x' a) and (p x'),
+         then (POWER X A a (inl X X->Prop x') (inr X X->Prop p))
 
-   3. Connecting all the predicates p : X->Prop to the new root:
+    3. Connecting all the predicates p : X->Prop to the new root:
 
-        (POWER X A a (inr X X->Prop p) (out X X->Prop)).
+         (POWER X A a (inr X X->Prop p) (out X X->Prop)).
 
-   This relation is impredicatively encoded as follows: *)
+    This relation is impredicatively encoded as follows: *)
 
 Definition POWER (X : Typ1) (A : Rel X) (a : X) (z' z : sum X (X -> Prop)) :=
   forall E : Prop,
@@ -54,7 +54,7 @@ Definition POWER (X : Typ1) (A : Rel X) (a : X) (z' z : sum X (X -> Prop)) :=
    eq (sum X (X -> Prop)) z' (inr X (X -> Prop) p) ->
    eq (sum X (X -> Prop)) z (out X (X -> Prop)) -> E) -> E.
 
-(* Introduction rules corresponding to the clauses: *)
+(** Introduction rules corresponding to the clauses: *)
 
 Lemma POWER_in1 :
  forall (X : Typ1) (A : Rel X) (a x x' : X),
@@ -83,9 +83,9 @@ Proof
   e p (eq_refl (sum X (X -> Prop)) (inr X (X -> Prop) p))
     (eq_refl (sum X (X -> Prop)) (out X (X -> Prop))).
 
-(* We now prove that the left injection (inl X X->Prop) is a delocation
-   from (X, A) to ((sum X X->Prop), (POWER X A a)), and deduce the
-   expected property of bisimilarity. *)
+(** We now prove that the left injection (inl X X->Prop) is a delocation
+    from (X, A) to ((sum X X->Prop), (POWER X A a)), and deduce the
+    expected property of bisimilarity. *)
 
 Lemma POWER_deloc :
  forall (X : Typ1) (A : Rel X) (a : X),
@@ -115,9 +115,9 @@ Proof.
 intros X A a x; apply EQV_deloc; apply POWER_deloc.
 Qed.
 
-(* Moreover, any subset of (X, A, a) is bisimilar to a pointed graph
-   of the form ((sum X X->Prop), (POWER X A a), (inr X X->Prop) p)
-   for a suitable predicate p : X->Prop. *)
+(** Moreover, any subset of (X, A, a) is bisimilar to a pointed graph
+    of the form ((sum X X->Prop), (POWER X A a), (inr X X->Prop) p)
+    for a suitable predicate p : X->Prop. *)
 
 Lemma POWER_subset_eqv :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -153,7 +153,7 @@ apply H4; assumption. apply EQV_sym; apply POWER_eqv. assumption.
 intros p H4 H5; apply (eq_inr_out _ _ _ H5).
 Qed.
 
-(* From this, we deduce the introduction rule of the powerset: *)
+(** From this, we deduce the introduction rule of the powerset: *)
 
 Lemma powerset_intro :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -168,7 +168,7 @@ intros X A a Y B b H;
 apply POWER_rt.  apply POWER_subset_eqv; assumption.
 Qed.
 
-(* And the elimination rule comes easily: *)
+(** And the elimination rule comes easily: *)
 
 Lemma powerset_elim :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
@@ -198,7 +198,7 @@ intros p0 H8 H9.
 apply (eq_inr_out _ _ _ (eq_trans _ _ _ _ (eq_sym _ _ _ H3) H9)).
 Qed.
 
-(* From this, we can conclude: *)
+(** From this, we can conclude: *)
 
 Theorem powerset :
  forall (X : Typ1) (A : Rel X) (a : X) (Y : Typ1) (B : Rel Y) (b : Y),
